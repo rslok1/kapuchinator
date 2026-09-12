@@ -12,7 +12,6 @@ jobs:
         sudo rm -rf /usr/share/dotnet
         sudo rm -rf /opt/ghc
         sudo rm -rf "/usr/local/share/boost"
-        sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -31,13 +30,13 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libssl-dev libffi-dev liblzma-dev build-essential libsqlite3-dev
-        pip install --upgrade pip
-        pip install buildozer cython virtualenv
+        sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libssl-dev libffi-dev liblzma-dev build-essential
+        pip install --upgrade pip setuptools wheel
+        pip install "buildozer==1.5.0" "cython<3.0" virtualenv
 
     - name: Build with Buildozer
       run: |
-        yes y | buildozer -v android debug
+        buildozer -v android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
