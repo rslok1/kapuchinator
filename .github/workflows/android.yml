@@ -4,42 +4,26 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Free disk space
-      run: |
-        sudo rm -rf /usr/share/dotnet
-        sudo rm -rf /opt/ghc
-        sudo rm -rf "/usr/local/share/boost"
-
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
 
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libssl-dev libffi-dev liblzma-dev build-essential
-        pip install --upgrade pip setuptools wheel
-        pip install "buildozer==1.5.0" "cython<3.0" virtualenv
-
-    - name: Build with Buildozer
-      run: |
-        buildozer -v android debug
+    - name: Build with Buildozer Action
+      uses: ArtemSBulgakov/buildozer-action@v1
+      id: buildozer
+      with:
+        workdir: .
+        buildozer_version: master
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: Capuchinator-APK
-        path: bin/*.apk
+        path: ${{ steps.buildozer.outputs.filename }}
